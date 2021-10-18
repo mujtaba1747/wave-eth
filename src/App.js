@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ethers } from "ethers";
+// import { ethers } from "ethers";
 import './App.css';
 
 export default function App() {
@@ -13,11 +13,11 @@ export default function App() {
 
       <div className="dataContainer">
         <div className="header">
-        😺 Hey there! 😺
+        <span role="img" aria-label="kitty">😺</span> Hey there! <span role="img" aria-label="kitty">😺</span>
         </div>
 
         <div className="bio">
-        I am Mujtaba and this is my first Web3.0 🔗 App, Cool Right ? Connect your Ethereum wallet and wave at me !
+        I am Mujtaba and this is my first <b>Web3.0 Dapp</b>, cool Right ? <br/>Connect your Ethereum wallet and wave at me !
         <br/>
         Technical Details: <br/>
           Blockchain: Ethereum <br/>
