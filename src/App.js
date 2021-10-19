@@ -236,7 +236,7 @@ const App = () => {
         )}
 
         <button className="waveButton" onClick={getAllWaves}>
-          Load all waves from the Blockchain
+          Reload messages from the Blockchain
         </button>
 
 
