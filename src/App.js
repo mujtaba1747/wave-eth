@@ -105,11 +105,54 @@ const App = () => {
       console.log(error);
     }
   }
+  useEffect(() => {
+    const getAllWaves2 = async () => {
+      try {
+        const { ethereum } = window;
+        if (ethereum) {
+          const provider = new ethers.providers.Web3Provider(ethereum);
+          const signer = provider.getSigner();
+          const wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer);
+  
+          /*
+           * Call the getAllWaves method from your Smart Contract
+           */
+          const waves = await wavePortalContract.getAllWaves();
+          
+  
+          /*
+           * We only need address, timestamp, and message in our UI so let's
+           * pick those out
+           */
+          let wavesCleaned = [];
+          waves.forEach(wave => {
+            wavesCleaned.push({
+              address: wave.waver,
+              timestamp: new Date(wave.timestamp * 1000),
+              message: wave.message
+            });
+          });
+  
+          /*
+           * Store our data in React State
+           */
+          setAllWaves(wavesCleaned);
+  
+        } else {
+          console.log("Ethereum object doesn't exist!")
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    getAllWaves2();
+  },// eslint-disable-next-line
+  [allWaves])
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const res = wave();
+    const res = await wave();
     console.log(res);
   }
 
