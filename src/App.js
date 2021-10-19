@@ -6,9 +6,16 @@ import './App.css';
 const App = () => {
   const [currentAccount, setCurrentAccount] = useState("");
 
-  const contractAddress = "0x2610278E96a68F23bF0A25Da01046c84C847B601";
+  /*
+   * All state property to store all waves
+   */
+  const [allWaves, setAllWaves] = useState([]);
+
+  const contractAddress = "0x0a2f8BdEB99E450977bf8fc5F80A9849206CC676";
 
   const contractABI = abi.abi;
+
+  const [msg, setMsg] = useState("");
   
   const checkIfWalletIsConnected = async () => {
     try {
@@ -55,6 +62,57 @@ const App = () => {
       console.log(error)
     }
   }
+
+  /*
+   * Create a method that gets all waves from your contract
+   */
+  const getAllWaves = async () => {
+    try {
+      const { ethereum } = window;
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer);
+
+        /*
+         * Call the getAllWaves method from your Smart Contract
+         */
+        const waves = await wavePortalContract.getAllWaves();
+        
+
+        /*
+         * We only need address, timestamp, and message in our UI so let's
+         * pick those out
+         */
+        let wavesCleaned = [];
+        waves.forEach(wave => {
+          wavesCleaned.push({
+            address: wave.waver,
+            timestamp: new Date(wave.timestamp * 1000),
+            message: wave.message
+          });
+        });
+
+        /*
+         * Store our data in React State
+         */
+        setAllWaves(wavesCleaned);
+
+      } else {
+        console.log("Ethereum object doesn't exist!")
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    const res = wave();
+    console.log(res);
+  }
+
   const wave = async () => {
     try {
       const { ethereum } = window;
@@ -69,7 +127,7 @@ const App = () => {
         /*
         * Execute the actual wave from your smart contract
         */
-        const waveTxn = await wavePortalContract.wave();
+        const waveTxn = await wavePortalContract.wave(msg);
         console.log("Mining...", waveTxn.hash);
 
         await waveTxn.wait();
@@ -100,16 +158,31 @@ const App = () => {
         </div>
 
         <div className="bio">
-        I am <a href="https://www.github.com/mujtaba1747">Mujtaba</a> and this is a simple <b>Web3.0 dApp</b>, cool right ? <br/>Connect your Ethereum wallet and wave at me !
+        I am <a href="https://www.github.com/mujtaba1747">Mujtaba</a> and this is a simple <b>Web3.0 dApp</b>, cool right ? <br/>Connect your Ethereum wallet and send me a message!
         <br/>
         Technical Details: <br/>
           Blockchain: Ethereum <br/>
           Network: Rinkeby Test Net
         </div>
 
-        <button className="waveButton" onClick={wave}>
+
+
+        {/* <button className="waveButton" onClick={wave}>
           Wave at Me
-        </button>
+        </button> */}
+
+        <form onSubmit={handleSubmit}>
+          <label>Enter your message:
+            <input
+              type="text" 
+              value={msg}
+              onChange={(e) => setMsg(e.target.value)}
+            />
+          </label>
+          <input type="submit" />
+        </form>
+
+
         {/*
         * If there is no currentAccount render this button
         */}
@@ -118,9 +191,27 @@ const App = () => {
             Connect Wallet
           </button>
         )}
+
+        <button className="waveButton" onClick={getAllWaves}>
+          Load all waves from the Blockchain
+        </button>
+
+
+        {allWaves.map((wave, index) => {
+          return (
+            <div key={index} style={{ backgroundColor: "OldLace", marginTop: "16px", padding: "8px" }}>
+              <div>Address: {wave.address}</div>
+              <div>Time: {wave.timestamp.toString()}</div>
+              <div>Message: {wave.message}</div>
+            </div>)
+        })}
+
       </div>
     </div>
   );
 }
 
+
+
 export default App
+
