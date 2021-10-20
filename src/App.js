@@ -11,7 +11,7 @@ const App = () => {
    */
   const [allWaves, setAllWaves] = useState([]);
 
-  const contractAddress = "0x0a2f8BdEB99E450977bf8fc5F80A9849206CC676";
+  const contractAddress = "0x9F500687ee75c6FEB5aa0CD5e30B3E15390db21A";
 
   const contractABI = abi.abi;
 
@@ -170,7 +170,7 @@ const App = () => {
         /*
         * Execute the actual wave from your smart contract
         */
-        const waveTxn = await wavePortalContract.wave(msg);
+        const waveTxn = await wavePortalContract.wave(msg, { gasLimit: 300000 });
         console.log("Mining...", waveTxn.hash);
 
         await waveTxn.wait();
